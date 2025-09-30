@@ -1,5 +1,9 @@
 services:
   - class: org.yamcs.http.HttpServer
+    args:
+      cors:
+        allowOrigin: "*"
+        allowCredentials: false
    
 dataDir: yamcs-data
 
