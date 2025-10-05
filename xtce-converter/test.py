@@ -57,7 +57,6 @@ for row in data[:5]:
                 name=row["Variable Name"],
                 short_description=row["UI Name"],
                 long_description=row["Description (optional)"],
-                encoding=extractEncoding("dsf")
             )
         case "Integer":
             Y.FloatParameter(
