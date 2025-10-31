@@ -14,15 +14,8 @@ if response.status_code == 200:
 with open("data.csv", newline="") as f:
     reader = csv.reader(f)
     headers = next(reader)[1:]
-    rows = [row for row in reader]
-    parameters = []
+    rows = list(reader)
 
-    for col in range(1, len(headers)+1):
-        column = []
-        for row in rows:
-            if row[col] != "":
-                column.append(row[col])
-        parameters.append(column)
-
-    parameterized_data = dict(zip(headers, parameters))
-    print(parameterized_data)
+    parameterized_data = {header: [row[i] for row in rows if row[i] != ""]
+        for i, header in enumerate(headers, start = 1)
+        }
