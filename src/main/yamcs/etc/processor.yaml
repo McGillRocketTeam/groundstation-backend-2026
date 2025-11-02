@@ -58,3 +58,8 @@ ArchiveRetrieval:
   config:
     parameterCache:
       enabled: false
+auth:
+  modules:
+    - class: org.yamcs.security.YamlAuthModule
+      args:
+        users: etc/users.yaml

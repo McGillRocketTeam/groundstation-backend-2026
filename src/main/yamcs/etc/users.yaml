@@ -1,0 +1,8 @@
+admin:
+  password: password
+  superuser: true
+
+operator:
+  displayName: Some User
+  password: password
+  roles: [ Operator ]
