@@ -258,7 +258,7 @@ def make_atomic_containers(
 ):
     containers: list[Y.ContainerEntry] = []
     for name, param_list in atomic_Data.items():
-        condition = Y.EqExpression(ref=atomic_header_params[name], value="true")
+        condition = Y.EqExpression(ref=atomic_header_params[name], value="True")
         container = Y.Container(
             system=system,
             name=name,
@@ -295,8 +295,11 @@ def make_header(system: Y.System, atomic_names: list[str]):
     # ┌───────────┬────────────┬──────────┬─────────────────────┐
     # │ seq (16b) │ flags (8b) │ pad (8b) │ atomic_bitmap (32b) │
     # └───────────┴────────────┴──────────┴─────────────────────┘
-    #                                                        ▲ ▲
-    #                                                        │ │
+    #                                           ▲        ▲   ▲ ▲
+    #                                   padding ┘        │   │ │
+    #                                                    │   │ │
+    #                                    nth atomic flag ┘   │ │
+    #                                             ⋮          │ │
     #                                        2nd atomic flag ┘ │
     #                                          1st atomic flag ┘
     #
@@ -309,7 +312,7 @@ def make_header(system: Y.System, atomic_names: list[str]):
         short_description="Sequence Number",
         long_description="A.S.T.R.A. Packet Identifider",
         signed=False,
-        bits=16,
+        encoding=Y.IntegerEncoding(bits=16),
     )
     container.entries.append(Y.ParameterEntry(seq, offset=0))
 
@@ -319,7 +322,7 @@ def make_header(system: Y.System, atomic_names: list[str]):
         short_description="Packet Flags",
         long_description="A.S.T.R.A. Packet Flags",
         signed=False,
-        bits=8,
+        encoding=Y.IntegerEncoding(bits=8),
     )
     container.entries.append(Y.ParameterEntry(flags, offset=0))
 
@@ -331,7 +334,7 @@ def make_header(system: Y.System, atomic_names: list[str]):
         short_description="Padding",
         long_description="A.S.T.R.A. Packet Padding",
         signed=False,
-        bits=padding_size,
+        encoding=Y.IntegerEncoding(bits=padding_size),
     )
     container.entries.append(Y.ParameterEntry(pad, offset=0))
 

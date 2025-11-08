@@ -4,7 +4,7 @@ services:
       cors:
         allowOrigin: "*"
         allowCredentials: false
-   
+
 dataDir: yamcs-data
 
 instances:

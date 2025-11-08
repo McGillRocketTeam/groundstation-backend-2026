@@ -72,7 +72,9 @@ See https://github.com/yamcs/pymdb
       <BooleanParameterType name="fdov_energized_SW" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
-      <IntegerParameterType name="flags" signed="false" sizeInBits="8"/>
+      <IntegerParameterType name="flags" signed="false" sizeInBits="32">
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
+      </IntegerParameterType>
       <BooleanParameterType name="flight_atomic_flag" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
@@ -121,7 +123,9 @@ See https://github.com/yamcs/pymdb
       <BooleanParameterType name="mov_hall_state" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
-      <IntegerParameterType name="padding" signed="false" sizeInBits="35"/>
+      <IntegerParameterType name="padding" signed="false" sizeInBits="32">
+        <IntegerDataEncoding sizeInBits="35" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+      </IntegerParameterType>
       <BooleanParameterType name="pilot_armed_HW" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
@@ -167,7 +171,9 @@ See https://github.com/yamcs/pymdb
       <BooleanParameterType name="ring_energized_SW" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
-      <IntegerParameterType name="seq" signed="false" sizeInBits="16"/>
+      <IntegerParameterType name="seq" signed="false" sizeInBits="32">
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+      </IntegerParameterType>
       <IntegerParameterType name="tank_pressure" signed="true" sizeInBits="32">
         <UnitSet>
           <Unit form="calibrated">psi</Unit>
@@ -434,7 +440,7 @@ See https://github.com/yamcs/pymdb
                 <Condition>
                   <ParameterInstanceRef parameterRef="prop_atomic_flag" useCalibratedValue="true"/>
                   <ComparisonOperator>==</ComparisonOperator>
-                  <Value>true</Value>
+                  <Value>True</Value>
                 </Condition>
               </BooleanExpression>
             </IncludeCondition>
@@ -448,7 +454,7 @@ See https://github.com/yamcs/pymdb
                 <Condition>
                   <ParameterInstanceRef parameterRef="valve_atomic_flag" useCalibratedValue="true"/>
                   <ComparisonOperator>==</ComparisonOperator>
-                  <Value>true</Value>
+                  <Value>True</Value>
                 </Condition>
               </BooleanExpression>
             </IncludeCondition>
@@ -462,7 +468,7 @@ See https://github.com/yamcs/pymdb
                 <Condition>
                   <ParameterInstanceRef parameterRef="test_atomic_flag" useCalibratedValue="true"/>
                   <ComparisonOperator>==</ComparisonOperator>
-                  <Value>true</Value>
+                  <Value>True</Value>
                 </Condition>
               </BooleanExpression>
             </IncludeCondition>
@@ -476,7 +482,7 @@ See https://github.com/yamcs/pymdb
                 <Condition>
                   <ParameterInstanceRef parameterRef="recov_atomic_flag" useCalibratedValue="true"/>
                   <ComparisonOperator>==</ComparisonOperator>
-                  <Value>true</Value>
+                  <Value>True</Value>
                 </Condition>
               </BooleanExpression>
             </IncludeCondition>
@@ -490,7 +496,7 @@ See https://github.com/yamcs/pymdb
                 <Condition>
                   <ParameterInstanceRef parameterRef="flight_atomic_flag" useCalibratedValue="true"/>
                   <ComparisonOperator>==</ComparisonOperator>
-                  <Value>true</Value>
+                  <Value>True</Value>
                 </Condition>
               </BooleanExpression>
             </IncludeCondition>

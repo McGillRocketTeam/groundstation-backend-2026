@@ -22,7 +22,7 @@ services:
   - class: org.yamcs.timeline.TimelineService
 
 dataLinks:
-  - name: tctm
+  - name: gs-radio-pad
     class: org.yamcs.mqtt.MqttPacketLink
     tmStream: tm_realtime
     # the packets sent by the simulator are coming from the quickstart, they are CCSDS without a secondary header (and without a timestamp)
