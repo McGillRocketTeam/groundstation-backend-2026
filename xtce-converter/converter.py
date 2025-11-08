@@ -1,5 +1,3 @@
-from unittest import case
-
 import yamcs.pymdb as Y
 import requests
 import csv
@@ -15,6 +13,8 @@ if response.status_code == 200:
         f.write(response.content)
 
 fc = Y.System("FlightComputer")
+
+
 
 with open("data.csv", newline="") as f:
     reader = csv.reader(f)
@@ -113,3 +113,5 @@ container = Y.Container(name="cont", system=fc, entries=param_array)
 with open("output.xml", "w") as f:
     fc.dump(f, indent = " " * 2)
     print("done")
+
+
