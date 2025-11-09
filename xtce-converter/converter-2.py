@@ -4,6 +4,7 @@ import csv
 import io
 import requests
 import yamcs.pymdb as Y
+from itertools import islice
 
 
 def _fetch_sheet_data(sheet_id: str, gid: str) -> list[list[str]]:
@@ -116,14 +117,13 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 "Binary parameters have not been implemented yet."
             )
         case "Boolean":
-            size = 1
             param = Y.BooleanParameter(
                 system=system,
                 name=variable_name,
                 short_description=ui_name,
                 long_description=description,
                 units=units,
-                encoding=Y.IntegerEncoding(bits=size),
+                encoding=Y.IntegerEncoding(bits=8, little_endian=True),
             )
             return param
         case "Enumerated":
@@ -141,7 +141,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 short_description=ui_name,
                 long_description=description,
                 units=units,
-                encoding=Y.IntegerEncoding(bits=size),
+                encoding=Y.IntegerEncoding(bits=size, little_endian=True),
                 choices=extract_enum_choices(enum_metadata),
             )
             return param
@@ -175,7 +175,9 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                     short_description=ui_name,
                     long_description=description,
                     units=units,
-                    encoding=Y.IntegerEncoding(bits=size, scheme=scheme),
+                    encoding=Y.IntegerEncoding(
+                        bits=size, scheme=scheme, little_endian=True
+                    ),
                 )
                 return param
         case "Integer":
@@ -276,6 +278,15 @@ def make_atomic_containers(
     return containers
 
 
+def chunked(iterable, n):
+    iterator = iter(iterable)
+    while True:
+        group = list(islice(iterator, n))
+        if not group:
+            break
+        yield group
+
+
 def make_header(system: Y.System, atomic_names: list[str]):
     container = Y.Container(system=system, name="header")
     atomic_params: dict[str, Y.BooleanParameter] = {}
@@ -312,7 +323,7 @@ def make_header(system: Y.System, atomic_names: list[str]):
         short_description="Sequence Number",
         long_description="A.S.T.R.A. Packet Identifider",
         signed=False,
-        encoding=Y.IntegerEncoding(bits=16),
+        encoding=Y.IntegerEncoding(bits=16, little_endian=True),
     )
     container.entries.append(Y.ParameterEntry(seq, offset=0))
 
@@ -322,25 +333,67 @@ def make_header(system: Y.System, atomic_names: list[str]):
         short_description="Packet Flags",
         long_description="A.S.T.R.A. Packet Flags",
         signed=False,
-        encoding=Y.IntegerEncoding(bits=8),
+        encoding=Y.IntegerEncoding(bits=8, little_endian=True),
     )
     container.entries.append(Y.ParameterEntry(flags, offset=0))
 
     num_empty_atomic_flags = 32 - len(atomic_params)
-    padding_size = 8 + num_empty_atomic_flags
     pad = Y.IntegerParameter(
         system=system,
         name="padding",
         short_description="Padding",
         long_description="A.S.T.R.A. Packet Padding",
         signed=False,
-        encoding=Y.IntegerEncoding(bits=padding_size),
+        encoding=Y.IntegerEncoding(bits=8, little_endian=True),
     )
     container.entries.append(Y.ParameterEntry(pad, offset=0))
 
-    for atomic_flag_parm in reversed(atomic_params.values()):
-        entry = Y.ParameterEntry(parameter=atomic_flag_parm, offset=0)
-        container.entries.append(entry)
+    # The following is some weird stuff
+    # to accomodate for the way C++ encodes the flags
+    # it encodes them little endian by byte.
+    #
+    # Example: (read flags as left to right,
+    #           so flag #1 is the leftmost
+    #           flag on the google sheet)
+    #
+    # 00000000           00000000  ....
+    # │││││││└▶ Flag #1  │││││││└▶ Flag #9
+    # ││││││└▶ Flag #2   ││││││└▶ Flag #10
+    # │││││└▶ Flag #3    │││││└▶ Flag #11
+    # ││││└▶ Flag #4     ││││└▶ Flag #12
+    # │││└▶ Flag #5      │││└▶ Flag #13
+    # ││└▶ Flag #6       ││└▶ Flag #14
+    # │└▶ Flag #7        │└▶ Flag #15
+    # └▶ Flag #8         └▶ Flag #16
+
+    if len(atomic_params) < 8:
+        # we need this if there is less than 32 atomic flags
+        pre_pad = Y.IntegerParameter(
+            system=system,
+            name="flags_pre_pad",
+            short_description="Flag Padding",
+            long_description="A.S.T.R.A. Packet Padding",
+            signed=False,
+            encoding=Y.IntegerEncoding(bits=8 - len(atomic_params), little_endian=True),
+        )
+        container.entries.append(Y.ParameterEntry(pre_pad, offset=0))
+
+    for group in chunked(atomic_params.values(), 8):
+        for atomic_flag_param in reversed(group):
+            entry = Y.ParameterEntry(parameter=atomic_flag_param, offset=0)
+            container.entries.append(entry)
+
+    if len(atomic_params) < 32:
+        # we need this if there is less than 32 atomic flags
+        pre_pad = Y.IntegerParameter(
+            system=system,
+            name="flags_post_pad",
+            short_description="Flag Padding",
+            long_description="A.S.T.R.A. Packet Padding",
+            signed=False,
+            encoding=Y.IntegerEncoding(bits=24, little_endian=True),
+        )
+        container.entries.append(Y.ParameterEntry(pre_pad, offset=0))
 
     return (container, atomic_params)
 

@@ -46,7 +46,7 @@ See https://github.com/yamcs/pymdb
         <UnitSet>
           <Unit form="calibrated">psi</Unit>
         </UnitSet>
-        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <IntegerParameterType name="fc_rssi" signed="true" sizeInBits="32">
         <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
@@ -55,25 +55,31 @@ See https://github.com/yamcs/pymdb
         <IntegerDataEncoding sizeInBits="8" encoding="twosComplement"/>
       </IntegerParameterType>
       <BooleanParameterType name="fdov_armed_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="fdov_armed_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="fdov_continuity_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="fdov_energizedCurrent_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="fdov_energizedGate_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="fdov_energized_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <IntegerParameterType name="flags" signed="false" sizeInBits="32">
         <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
+      </IntegerParameterType>
+      <IntegerParameterType name="flags_post_pad" signed="false" sizeInBits="32">
+        <IntegerDataEncoding sizeInBits="24" encoding="unsigned" byteOrder="leastSignificantByteFirst"/>
+      </IntegerParameterType>
+      <IntegerParameterType name="flags_pre_pad" signed="false" sizeInBits="32">
+        <IntegerDataEncoding sizeInBits="3" encoding="unsigned"/>
       </IntegerParameterType>
       <BooleanParameterType name="flight_atomic_flag" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
@@ -103,88 +109,88 @@ See https://github.com/yamcs/pymdb
         <FloatDataEncoding sizeInBits="32" encoding="IEEE754_1985" byteOrder="mostSignificantByteFirst"/>
       </FloatParameterType>
       <BooleanParameterType name="mov_armed_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="mov_armed_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="mov_continuity_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="mov_energizedCurrent_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="mov_energizedGate_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="mov_energized_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="mov_hall_state" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <IntegerParameterType name="padding" signed="false" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="35" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </IntegerParameterType>
       <BooleanParameterType name="pilot_armed_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="pilot_armed_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="pilot_continuity_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="pilot_energizedCurrent_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="pilot_energizedGate_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="pilot_energized_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="prop_atomic_flag" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="prop_energized_electric" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="recov_atomic_flag" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="ring_armed_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="ring_armed_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="ring_continuity_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="ring_energizedCurrent_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="ring_energizedGate_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="ring_energized_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <IntegerParameterType name="seq" signed="false" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <IntegerParameterType name="tank_pressure" signed="true" sizeInBits="32">
         <UnitSet>
           <Unit form="calibrated">psi</Unit>
         </UnitSet>
-        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <IntegerParameterType name="tank_temp" signed="true" sizeInBits="32">
         <UnitSet>
           <Unit form="calibrated">°C</Unit>
         </UnitSet>
-        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <BooleanParameterType name="test_atomic_flag" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
@@ -193,22 +199,22 @@ See https://github.com/yamcs/pymdb
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="vent_armed_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="vent_armed_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="vent_continuity_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="vent_energizedCurrent_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="vent_energizedGate_HW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <BooleanParameterType name="vent_energized_SW" zeroStringValue="False" oneStringValue="True">
-        <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </BooleanParameterType>
       <IntegerParameterType name="vent_temp" signed="true" sizeInBits="32">
         <UnitSet>
@@ -289,6 +295,14 @@ See https://github.com/yamcs/pymdb
       </Parameter>
       <Parameter name="flags" parameterTypeRef="flags" shortDescription="Packet Flags">
         <LongDescription>A.S.T.R.A. Packet Flags</LongDescription>
+        <ParameterProperties dataSource="telemetered" persistence="true"/>
+      </Parameter>
+      <Parameter name="flags_post_pad" parameterTypeRef="flags_post_pad" shortDescription="Flag Padding">
+        <LongDescription>A.S.T.R.A. Packet Padding</LongDescription>
+        <ParameterProperties dataSource="telemetered" persistence="true"/>
+      </Parameter>
+      <Parameter name="flags_pre_pad" parameterTypeRef="flags_pre_pad" shortDescription="Flag Padding">
+        <LongDescription>A.S.T.R.A. Packet Padding</LongDescription>
         <ParameterProperties dataSource="telemetered" persistence="true"/>
       </Parameter>
       <Parameter name="flight_atomic_flag" parameterTypeRef="flight_atomic_flag">
@@ -599,6 +613,11 @@ See https://github.com/yamcs/pymdb
               <FixedValue>0</FixedValue>
             </LocationInContainerInBits>
           </ParameterRefEntry>
+          <ParameterRefEntry parameterRef="flags_pre_pad">
+            <LocationInContainerInBits referenceLocation="previousEntry">
+              <FixedValue>0</FixedValue>
+            </LocationInContainerInBits>
+          </ParameterRefEntry>
           <ParameterRefEntry parameterRef="flight_atomic_flag">
             <LocationInContainerInBits referenceLocation="previousEntry">
               <FixedValue>0</FixedValue>
@@ -620,6 +639,11 @@ See https://github.com/yamcs/pymdb
             </LocationInContainerInBits>
           </ParameterRefEntry>
           <ParameterRefEntry parameterRef="prop_atomic_flag">
+            <LocationInContainerInBits referenceLocation="previousEntry">
+              <FixedValue>0</FixedValue>
+            </LocationInContainerInBits>
+          </ParameterRefEntry>
+          <ParameterRefEntry parameterRef="flags_post_pad">
             <LocationInContainerInBits referenceLocation="previousEntry">
               <FixedValue>0</FixedValue>
             </LocationInContainerInBits>

@@ -34,8 +34,8 @@ dataLinks:
     commandPostprocessorClassName: org.yamcs.tctm.GenericCommandPostprocessor
     # MQTT connection parameters
     brokers:
-       - tcp://test.mosquitto.org:1883 
-    tmTopic: yamcs-tm-packets
+       - tcp://localhost:1883 
+    tmTopic: radio 
     tcTopic: yamcs-tc-packets
     #connectionTimeoutSecs: 5
     #keepAliveSecs: 60
