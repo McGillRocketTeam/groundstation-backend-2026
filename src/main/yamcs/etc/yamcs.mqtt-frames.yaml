@@ -31,7 +31,7 @@ dataLinks:
     class: org.yamcs.mqtt.MqttTcFrameLink
     # MQTT connection parameters
     brokers:
-       - tcp://test.mosquitto.org:1883 
+       - tcp://mrt.leomindlin.com:1883 
     topic: yamcs-tc-frames
     spacecraftId: 0xAB
     maxFrameLength: 1024
@@ -47,7 +47,7 @@ dataLinks:
     class: org.yamcs.mqtt.MqttTmFrameLink
     # MQTT connection parameters
     brokers:
-       - tcp://test.mosquitto.org:1883 
+       - tcp://mrt.leomindlin.com:1883 
     topic: yamcs-tm-frames
     #used to extract the frame data from the MQTT message
     converterClassName: org.yamcs.mqtt.LeafMqttToFrameConverter
