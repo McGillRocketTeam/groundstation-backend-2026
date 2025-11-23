@@ -39,7 +39,7 @@ dataLinks:
     tcTopic: yamcs-tc-packets
     #connectionTimeoutSecs: 5
     #keepAliveSecs: 60
-    #autoRecoonect: true
+    autoRecoonect: true
     #username: 
     #password:
 
