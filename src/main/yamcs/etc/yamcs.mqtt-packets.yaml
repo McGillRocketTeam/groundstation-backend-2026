@@ -37,9 +37,9 @@ dataLinks:
        - tcp://localhost:1883 
     tmTopic: radio 
     tcTopic: yamcs-tc-packets
-    #connectionTimeoutSecs: 5
-    #keepAliveSecs: 60
-    autoRecoonect: true
+    # autoRecoonect: true
+    # connectionTimeoutSecs: 5
+    # keepAliveSecs: 60
     #username: 
     #password:
 
