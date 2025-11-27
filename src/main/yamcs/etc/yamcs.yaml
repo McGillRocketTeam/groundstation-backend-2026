@@ -10,6 +10,7 @@ dataDir: yamcs-data
 instances:
   - mqtt-packets
   - mqtt-frames
+  - ground_station 
 
 # Secret key unique to a particular Yamcs installation.
 # This is used to provide cryptographic signing.
