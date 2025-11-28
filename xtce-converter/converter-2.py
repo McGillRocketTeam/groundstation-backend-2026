@@ -123,7 +123,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 short_description=ui_name,
                 long_description=description,
                 units=units,
-                encoding=Y.IntegerEncoding(bits=8, little_endian=True),
+                encoding=Y.IntegerEncoding(bits=1),
             )
             return param
         case "Enumerated":
@@ -202,9 +202,21 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
             )
             return param
         case "String":
-            raise NotImplementedError(
-                "String parameters have not been implemented yet."
+            encoded_type = str(row["Encoding"])
+            size = extract_number(encoded_type)
+            if size == None:
+                raise ValueError(
+                    f"Input Error: Tried to create string parameter '{variable_name}', but could not find a size in the type '{encoded_type}'"
+                )
+            param = Y.StringParameter(
+                system=system,
+                name=variable_name,
+                short_description=ui_name,
+                long_description=description,
+                units=units,
+                encoding=Y.StringEncoding(bits=size*8),
             )
+            return param
 
     raise ValueError(f"Unhandled GUI Type '{gui_type}' in make_param().")
 
@@ -252,6 +264,56 @@ def main() -> None:
     write_system(fc)
 
 
+
+
+def process_booleans_group(
+    system: Y.System,
+    container: Y.Container,
+    boolean_params: list[Y.BooleanParameter],
+    start_bit_pos: int,
+    container_name: str,
+) -> int:
+    if not boolean_params:
+        return start_bit_pos
+    
+    current_bit_pos = start_bit_pos
+    
+    # Group booleans into bytes (8 per group)
+    for group in chunked(boolean_params, 8):
+        group_size = len(group)
+        
+        # If incomplete group (less than 8), add leading padding
+        # Example: [A, B, C] -> (pad x 5) C B A
+        # Padding at higher bits, booleans at lower bits
+        if group_size < 8:
+            padding_bits = 8 - group_size
+            pad_param = Y.IntegerParameter(
+                system=system,
+                name=f"{container_name}_bool_lead_pad",
+                short_description="Boolean Leading Padding",
+                signed=False,
+                encoding=Y.IntegerEncoding(bits=padding_bits),
+            )
+            # Padding goes at higher bits (after the booleans in bit position)
+            # Booleans will be at current_bit_pos to current_bit_pos + group_size - 1
+            # Padding will be at current_bit_pos + group_size to current_bit_pos + 7
+            container.entries.append(Y.ParameterEntry(parameter=pad_param, bitpos=current_bit_pos + group_size))
+        
+        # Place booleans in reverse order within the byte
+        # Logical order: A, B, C, D, E, F, G, H
+        # Bits come into the backend little endian reversed so bit locations != logical order
+        # Bit positions: A=bit7, B=bit6, C=bit5, ..., H=bit0 (reversed)
+        # So reading the booleans correctly in the backend is like this H G F E D C B A
+        # So H will come first
+        for i, bool_param in enumerate(group):
+            bit_pos = current_bit_pos + 7 - i
+            entry = Y.ParameterEntry(parameter=bool_param, bitpos=bit_pos)
+            container.entries.append(entry)
+        current_bit_pos += 8
+    
+    return current_bit_pos
+
+
 def make_atomic_containers(
     system: Y.System,
     atomic_Data: dict[str, list[Any]],
@@ -267,11 +329,37 @@ def make_atomic_containers(
             condition=condition,
         )
 
+        boolean_buffer: list[Y.BooleanParameter] = []
+        current_bit_pos = 0
+
         for param_name in param_list:
             if param_name == "":
                 break
             param = param_dict[param_name]
-            container.entries.append(Y.ParameterEntry(parameter=param, offset=0))
+            
+            if isinstance(param, Y.BooleanParameter):
+                boolean_buffer.append(param)
+                
+                if len(boolean_buffer) >= 8:
+                    current_bit_pos = process_booleans_group(
+                        system, container, boolean_buffer, current_bit_pos, name
+                    )
+                    boolean_buffer.clear()
+            else:
+                if boolean_buffer:
+                    current_bit_pos = process_booleans_group(
+                        system, container, boolean_buffer, current_bit_pos, name
+                    )
+                    boolean_buffer.clear()
+                
+                container.entries.append(Y.ParameterEntry(parameter=param, offset=0))
+                if hasattr(param, 'encoding') and param.encoding and hasattr(param.encoding, 'bits'):
+                    current_bit_pos += param.encoding.bits
+        
+        if boolean_buffer:
+            current_bit_pos = process_booleans_group(
+                system, container, boolean_buffer, current_bit_pos, name
+            )
 
         containers.append(Y.ContainerEntry(container=container, condition=condition))
 
