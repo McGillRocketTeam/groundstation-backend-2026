@@ -22,7 +22,7 @@ services:
   - class: org.yamcs.timeline.TimelineService
 
 dataLinks:
-  - name: tctm
+  - name: gs-radio-pad
     class: org.yamcs.mqtt.MqttPacketLink
     tmStream: tm_realtime
     # the packets sent by the simulator are coming from the quickstart, they are CCSDS without a secondary header (and without a timestamp)
@@ -38,16 +38,16 @@ dataLinks:
        - tcp://mrt.leomindlin.com:1883 
     tmTopic: yamcs-tm-packets
     tcTopic: yamcs-tc-packets
-    #connectionTimeoutSecs: 5
-    #keepAliveSecs: 60
-    #autoRecoonect: true
+    # autoRecoonect: true
+    # connectionTimeoutSecs: 5
+    # keepAliveSecs: 60
     #username: 
     #password:
 
 mdb:
   - type: xtce
     args:
-      file: mdb/xtce.xml
+      file: mdb/FlightComputer.xml
 
 # Configuration for streams created at server startup
 streamConfig:
