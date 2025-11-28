@@ -30,6 +30,7 @@ dataLinks:
     packetPreprocessorArgs:
        timestampOffset: -1 #no timestmap in the packet
        seqCountOffset: 0
+    tmStream: tm_realtime
     tcStream: tc_realtime
     commandPostprocessorClassName: org.yamcs.tctm.GenericCommandPostprocessor
     # MQTT connection parameters
@@ -60,4 +61,3 @@ streamConfig:
   tc:
     - name: "tc_realtime"
       processor: "realtime"
-
