@@ -7,13 +7,13 @@ See https://github.com/yamcs/pymdb
   <TelemetryMetaData>
     <ParameterTypeSet>
       <IntegerParameterType name="acceleration_x" signed="true" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="twosComplement" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="twosComplement" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <IntegerParameterType name="acceleration_y" signed="true" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="twosComplement" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="twosComplement" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <IntegerParameterType name="acceleration_z" signed="true" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="twosComplement" byteOrder="mostSignificantByteFirst"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="twosComplement" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
       <FloatParameterType name="altimeter_altitude" sizeInBits="32">
         <FloatDataEncoding sizeInBits="32" encoding="IEEE754_1985" byteOrder="mostSignificantByteFirst"/>
@@ -201,7 +201,7 @@ See https://github.com/yamcs/pymdb
       </IntegerParameterType>
       <IntegerParameterType name="tank_temp" signed="true" sizeInBits="32">
         <UnitSet>
-          <Unit form="calibrated">°C</Unit>
+          <Unit form="calibrated">Â°C</Unit>
         </UnitSet>
         <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="leastSignificantByteFirst"/>
       </IntegerParameterType>
@@ -225,7 +225,7 @@ See https://github.com/yamcs/pymdb
       </BooleanParameterType>
       <IntegerParameterType name="vent_temp" signed="true" sizeInBits="32">
         <UnitSet>
-          <Unit form="calibrated">°C</Unit>
+          <Unit form="calibrated">Â°C</Unit>
         </UnitSet>
         <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
       </IntegerParameterType>
