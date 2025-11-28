@@ -62,6 +62,7 @@ public class AstraAggregateDataLink extends AbstractLink implements AggregatedDa
 			client.setCallback(new MqttCallback() {
 				@Override
 				public void connectionLost(Throwable cause) {
+
 					eventProducer.sendWarning(
 							"MQTT connection lost: " + cause.getMessage());
 				}
@@ -79,7 +80,7 @@ public class AstraAggregateDataLink extends AbstractLink implements AggregatedDa
 			client.connect(connOpts).waitForCompletion();
 			client.subscribe("#", 0).waitForCompletion();
 
-			detailedStatus = "Connected to MQTT broker, listening for radio-* devices";
+			detailedStatus = "Connected to MQTT broker, listening for devices";
 			eventProducer.sendInfo(detailedStatus);
 			notifyStarted();
 
