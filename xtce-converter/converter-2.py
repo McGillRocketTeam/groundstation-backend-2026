@@ -3,6 +3,7 @@ import re
 import csv
 import io
 import requests
+import argparse
 import yamcs.pymdb as Y
 from itertools import islice
 
@@ -214,56 +215,11 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 short_description=ui_name,
                 long_description=description,
                 units=units,
-                encoding=Y.StringEncoding(bits=size*8),
+                encoding=Y.StringEncoding(bits=size * 8),
             )
             return param
 
     raise ValueError(f"Unhandled GUI Type '{gui_type}' in make_param().")
-
-
-def write_system(system: Y.System):
-    with open("../src/main/yamcs/mdb/FlightComputer.xml", "w") as f:
-        system.dump(f, indent=" " * 2)
-        print("done")
-
-
-def main() -> None:
-    sheet_id = "1Ukaums3NfbJdVOQL7E1QMyPNoQ7gD5Zxciiz4ucRUrk"
-    parameter_gid = "2042306306"
-    atomic_gid = "2140536820"
-
-    param_data = load_sheet_rows(sheet_id, parameter_gid)
-
-    fc = Y.System("FlightComputer")
-
-    param_dict: dict[str, Y.Parameter] = {}
-
-    for row in param_data:
-        param = make_param(fc, row)
-        param_dict[param.name] = param
-
-    print("Creating Atomics...")
-    atomic_data = load_sheet_columns(sheet_id, atomic_gid)
-
-    frame_container = Y.Container(system=fc, name="FCFrame")
-    (header_container, atomic_header_params) = make_header(
-        system=fc, atomic_names=list(atomic_data.keys())
-    )
-    frame_container.entries.append(Y.ContainerEntry(header_container))
-
-    atomic_containers = make_atomic_containers(
-        system=fc,
-        atomic_Data=atomic_data,
-        param_dict=param_dict,
-        atomic_header_params=atomic_header_params,
-    )
-
-    for container_entry in atomic_containers:
-        frame_container.entries.append(container_entry)
-
-    write_system(fc)
-
-
 
 
 def process_booleans_group(
@@ -275,13 +231,13 @@ def process_booleans_group(
 ) -> int:
     if not boolean_params:
         return start_bit_pos
-    
+
     current_bit_pos = start_bit_pos
-    
+
     # Group booleans into bytes (8 per group)
     for group in chunked(boolean_params, 8):
         group_size = len(group)
-        
+
         # If incomplete group (less than 8), add leading padding
         # Example: [A, B, C] -> (pad x 5) C B A
         # Padding at higher bits, booleans at lower bits
@@ -297,8 +253,12 @@ def process_booleans_group(
             # Padding goes at higher bits (after the booleans in bit position)
             # Booleans will be at current_bit_pos to current_bit_pos + group_size - 1
             # Padding will be at current_bit_pos + group_size to current_bit_pos + 7
-            container.entries.append(Y.ParameterEntry(parameter=pad_param, bitpos=current_bit_pos + group_size))
-        
+            container.entries.append(
+                Y.ParameterEntry(
+                    parameter=pad_param, bitpos=current_bit_pos + group_size
+                )
+            )
+
         # Place booleans in reverse order within the byte
         # Logical order: A, B, C, D, E, F, G, H
         # Bits come into the backend little endian reversed so bit locations != logical order
@@ -310,7 +270,7 @@ def process_booleans_group(
             entry = Y.ParameterEntry(parameter=bool_param, bitpos=bit_pos)
             container.entries.append(entry)
         current_bit_pos += 8
-    
+
     return current_bit_pos
 
 
@@ -336,10 +296,10 @@ def make_atomic_containers(
             if param_name == "":
                 break
             param = param_dict[param_name]
-            
+
             if isinstance(param, Y.BooleanParameter):
                 boolean_buffer.append(param)
-                
+
                 if len(boolean_buffer) >= 8:
                     current_bit_pos = process_booleans_group(
                         system, container, boolean_buffer, current_bit_pos, name
@@ -351,11 +311,15 @@ def make_atomic_containers(
                         system, container, boolean_buffer, current_bit_pos, name
                     )
                     boolean_buffer.clear()
-                
+
                 container.entries.append(Y.ParameterEntry(parameter=param, offset=0))
-                if hasattr(param, 'encoding') and param.encoding and hasattr(param.encoding, 'bits'):
+                if (
+                    hasattr(param, "encoding")
+                    and param.encoding
+                    and hasattr(param.encoding, "bits")
+                ):
                     current_bit_pos += param.encoding.bits
-        
+
         if boolean_buffer:
             current_bit_pos = process_booleans_group(
                 system, container, boolean_buffer, current_bit_pos, name
@@ -484,6 +448,67 @@ def make_header(system: Y.System, atomic_names: list[str]):
         container.entries.append(Y.ParameterEntry(pre_pad, offset=0))
 
     return (container, atomic_params)
+
+
+def write_system(system: Y.System):
+    with open("../src/main/yamcs/mdb/FlightComputer.xml", "w") as f:
+        system.dump(f, indent=" " * 2)
+        print("done")
+
+
+def write_system(system: Y.System, output_path: str):
+    with open(output_path, "w") as f:
+        system.dump(f, indent=" " * 2)
+    print(f"✅ Wrote system definition to {output_path}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate FlightComputer Yamcs XML from Google Sheets"
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Path to output XML file (default: FlightComputer.xml)",
+        default="FlightComputer.xml",
+    )
+    args = parser.parse_args()
+
+    output_path = args.output
+
+    sheet_id = "1Ukaums3NfbJdVOQL7E1QMyPNoQ7gD5Zxciiz4ucRUrk"
+    parameter_gid = "2042306306"
+    atomic_gid = "2140536820"
+
+    param_data = load_sheet_rows(sheet_id, parameter_gid)
+
+    fc = Y.System("FlightComputer")
+
+    param_dict: dict[str, Y.Parameter] = {}
+    for row in param_data:
+        param = make_param(fc, row)
+        param_dict[param.name] = param
+
+    print("Creating Atomics...")
+    atomic_data = load_sheet_columns(sheet_id, atomic_gid)
+
+    frame_container = Y.Container(system=fc, name="FCFrame")
+    (header_container, atomic_header_params) = make_header(
+        system=fc, atomic_names=list(atomic_data.keys())
+    )
+    frame_container.entries.append(Y.ContainerEntry(header_container))
+
+    atomic_containers = make_atomic_containers(
+        system=fc,
+        atomic_Data=atomic_data,
+        param_dict=param_dict,
+        atomic_header_params=atomic_header_params,
+    )
+
+    for container_entry in atomic_containers:
+        frame_container.entries.append(container_entry)
+
+    write_system(fc, output_path)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,3 @@
+[submodule "xtce-converter/pymdb"]
+	path = xtce-converter/pymdb
+	url = https://github.com/McGillRocketTeam/pymdb
