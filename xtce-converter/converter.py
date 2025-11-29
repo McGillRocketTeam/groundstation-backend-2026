@@ -99,6 +99,11 @@ def extract_number(s: str) -> int | None:
     match = re.search(r"\d+", s)
     return int(match.group()) if match else None
 
+def set_param_calibrator(row):
+    cal = row["Calibration Function f(x)"]
+    if cal:
+        return Y.calibrators.MathOperation(expression=cal)
+    return None
 
 def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
     gui_type = str(row["GUI Type"])
@@ -153,7 +158,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 raise ValueError(
                     f"Input Error: Tried to create float parameter '{variable_name}', but could not find a size in the type '{encoded_type}'"
                 )
-
+            calibrator = set_param_calibrator(row)
             if "float" in encoded_type:
                 param = Y.FloatParameter(
                     system=system,
@@ -162,6 +167,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                     long_description=description,
                     units=units,
                     encoding=Y.FloatEncoding(bits=size),
+                    calibrator=calibrator,
                 )
                 return param
             elif "int" in encoded_type:
@@ -179,6 +185,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                     encoding=Y.IntegerEncoding(
                         bits=size, scheme=scheme, little_endian=True
                     ),
+                    calibrator=calibrator,
                 )
                 return param
         case "Integer":
@@ -193,6 +200,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 if "u" in encoded_type
                 else Y.IntegerEncodingScheme.TWOS_COMPLEMENT
             )
+            calibrator = set_param_calibrator(row)
             param = Y.IntegerParameter(
                 system=system,
                 name=variable_name,
@@ -200,6 +208,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 long_description=description,
                 units=units,
                 encoding=Y.IntegerEncoding(bits=size, scheme=scheme),
+                calibrator=calibrator,
             )
             return param
         case "String":
