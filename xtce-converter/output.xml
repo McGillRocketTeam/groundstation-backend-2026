@@ -6,15 +6,6 @@ See https://github.com/yamcs/pymdb
 <SpaceSystem xmlns="http://www.omg.org/spec/XTCE/20180204" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.omg.org/spec/XTCE/20180204 https://www.omg.org/spec/XTCE/20180204/SpaceSystem.xsd" name="FlightComputer">
   <TelemetryMetaData>
     <ParameterTypeSet>
-      <FloatParameterType name="acceleration_x" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="onesComplement" byteOrder="mostSignificantByteFirst"/>
-      </FloatParameterType>
-      <FloatParameterType name="acceleration_y" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="onesComplement" byteOrder="mostSignificantByteFirst"/>
-      </FloatParameterType>
-      <FloatParameterType name="acceleration_z" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="onesComplement" byteOrder="mostSignificantByteFirst"/>
-      </FloatParameterType>
       <FloatParameterType name="altimeter_altitude" sizeInBits="32">
         <FloatDataEncoding sizeInBits="32" encoding="IEEE754_1985" byteOrder="mostSignificantByteFirst"/>
       </FloatParameterType>
@@ -42,14 +33,20 @@ See https://github.com/yamcs/pymdb
       <FloatParameterType name="barometer_altitude" sizeInBits="32">
         <FloatDataEncoding sizeInBits="32" encoding="IEEE754_1985" byteOrder="mostSignificantByteFirst"/>
       </FloatParameterType>
+      <StringParameterType name="call_sign"/>
       <FloatParameterType name="cc_pressure" sizeInBits="32">
         <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
       </FloatParameterType>
       <FloatParameterType name="fc_rssi" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst"/>
-      </FloatParameterType>
-      <FloatParameterType name="fc_snr" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="8" encoding="onesComplement"/>
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" byteOrder="mostSignificantByteFirst">
+          <DefaultCalibrator>
+            <MathOperationCalibrator>
+              <ThisParameterOperand/>
+              <ValueOperand>-100</ValueOperand>
+              <Operator>/</Operator>
+            </MathOperationCalibrator>
+          </DefaultCalibrator>
+        </IntegerDataEncoding>
       </FloatParameterType>
       <BooleanParameterType name="fdov_armed_HW" zeroStringValue="False" oneStringValue="True">
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
@@ -178,22 +175,21 @@ See https://github.com/yamcs/pymdb
         <IntegerDataEncoding sizeInBits="1" encoding="unsigned"/>
       </BooleanParameterType>
       <FloatParameterType name="vent_temp" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="8" encoding="unsigned"/>
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned">
+          <DefaultCalibrator>
+            <MathOperationCalibrator>
+              <ThisParameterOperand/>
+              <ValueOperand>10</ValueOperand>
+              <Operator>/</Operator>
+            </MathOperationCalibrator>
+          </DefaultCalibrator>
+        </IntegerDataEncoding>
       </FloatParameterType>
       <FloatParameterType name="vertical_speed" sizeInBits="32">
         <IntegerDataEncoding sizeInBits="32" encoding="onesComplement" byteOrder="mostSignificantByteFirst"/>
       </FloatParameterType>
     </ParameterTypeSet>
     <ParameterSet>
-      <Parameter name="acceleration_x" parameterTypeRef="acceleration_x" shortDescription="Acceleration x">
-        <ParameterProperties dataSource="telemetered" persistence="true"/>
-      </Parameter>
-      <Parameter name="acceleration_y" parameterTypeRef="acceleration_y" shortDescription="Acceleration y">
-        <ParameterProperties dataSource="telemetered" persistence="true"/>
-      </Parameter>
-      <Parameter name="acceleration_z" parameterTypeRef="acceleration_z" shortDescription="Acceleration z">
-        <ParameterProperties dataSource="telemetered" persistence="true"/>
-      </Parameter>
       <Parameter name="altimeter_altitude" parameterTypeRef="altimeter_altitude" shortDescription="Altitude from ground">
         <LongDescription>Calculated on FC</LongDescription>
         <ParameterProperties dataSource="telemetered" persistence="true"/>
@@ -223,14 +219,14 @@ See https://github.com/yamcs/pymdb
       <Parameter name="barometer_altitude" parameterTypeRef="barometer_altitude" shortDescription="Altitude calculated from the barometric pressure">
         <ParameterProperties dataSource="telemetered" persistence="true"/>
       </Parameter>
+      <Parameter name="call_sign" parameterTypeRef="call_sign" shortDescription="call sign for radio transmission">
+        <ParameterProperties dataSource="telemetered" persistence="true"/>
+      </Parameter>
       <Parameter name="cc_pressure" parameterTypeRef="cc_pressure" shortDescription="Combustion Chamber Pressure">
         <LongDescription>Calculated from sensor voltage.</LongDescription>
         <ParameterProperties dataSource="telemetered" persistence="true"/>
       </Parameter>
       <Parameter name="fc_rssi" parameterTypeRef="fc_rssi" shortDescription="Relative Signal Strength Indicator of FC radio">
-        <ParameterProperties dataSource="telemetered" persistence="true"/>
-      </Parameter>
-      <Parameter name="fc_snr" parameterTypeRef="fc_snr" shortDescription="Signal to noise ratio of the FC radio">
         <ParameterProperties dataSource="telemetered" persistence="true"/>
       </Parameter>
       <Parameter name="fdov_armed_HW" parameterTypeRef="fdov_armed_HW" shortDescription="FDOV: Electrical ARM">
@@ -603,17 +599,17 @@ See https://github.com/yamcs/pymdb
               <FixedValue>416</FixedValue>
             </LocationInContainerInBits>
           </ParameterRefEntry>
-          <ParameterRefEntry parameterRef="acceleration_x">
+          <ParameterRefEntry parameterRef="vertical_speed">
             <LocationInContainerInBits referenceLocation="containerStart">
               <FixedValue>448</FixedValue>
             </LocationInContainerInBits>
           </ParameterRefEntry>
-          <ParameterRefEntry parameterRef="acceleration_y">
+          <ParameterRefEntry parameterRef="vertical_speed">
             <LocationInContainerInBits referenceLocation="containerStart">
               <FixedValue>464</FixedValue>
             </LocationInContainerInBits>
           </ParameterRefEntry>
-          <ParameterRefEntry parameterRef="acceleration_z">
+          <ParameterRefEntry parameterRef="vertical_speed">
             <LocationInContainerInBits referenceLocation="containerStart">
               <FixedValue>480</FixedValue>
             </LocationInContainerInBits>
@@ -638,9 +634,14 @@ See https://github.com/yamcs/pymdb
               <FixedValue>544</FixedValue>
             </LocationInContainerInBits>
           </ParameterRefEntry>
-          <ParameterRefEntry parameterRef="fc_snr">
+          <ParameterRefEntry parameterRef="fc_rssi">
             <LocationInContainerInBits referenceLocation="containerStart">
               <FixedValue>560</FixedValue>
+            </LocationInContainerInBits>
+          </ParameterRefEntry>
+          <ParameterRefEntry parameterRef="call_sign">
+            <LocationInContainerInBits referenceLocation="containerStart">
+              <FixedValue>568</FixedValue>
             </LocationInContainerInBits>
           </ParameterRefEntry>
         </EntryList>

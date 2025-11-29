@@ -1,5 +1,6 @@
 from unittest import case
 import yamcs.pymdb as Y
+from yamcs.pymdb.calibrators import MathOperation
 import requests
 import csv
 
@@ -60,17 +61,17 @@ for row in data:
             param = Y.EnumeratedParameter(**kwargs, choices=choices, encoding=Y.IntegerEncoding(bits=number))
             bit_pos = parametrize(param, bit_pos, number)
         case "Float":
-            # cal = row["Calibration Function f(x)"]
-            # if cal:
-            #     calibrator = None
-            # else:
-            #     calibrator = None
+            cal = row["Calibration Function f(x)"]
+            if cal:
+                calibrator = MathOperation(expression=cal)
+            else:
+                calibrator = None
             enc = row["Encoding"]
             number = int("".join(filter(str.isdigit, enc)))
             if "uint" in enc:
-                param = Y.FloatParameter(**kwargs, encoding=Y.IntegerEncoding(bits=number)) #calibrator = calibrator
+                param = Y.FloatParameter(**kwargs, encoding=Y.IntegerEncoding(bits=number), calibrator=calibrator)
             elif "float" in enc:
-                param = Y.FloatParameter(**kwargs, encoding=Y.FloatEncoding(bits=number)) #calibrator = calibrator
+                param = Y.FloatParameter(**kwargs, encoding=Y.FloatEncoding(bits=number), calibrator=calibrator)
             bit_pos = parametrize(param, bit_pos, number)
         case "Integer":
             enc = row["Encoding"]
