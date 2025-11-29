@@ -131,6 +131,29 @@ public class AstraAggregateDataLink extends AbstractLink implements AggregatedDa
 			return createSubLinkForDevice(dn);
 		});
 
+		try {
+			String jsonString = new String(payload, StandardCharsets.UTF_8);
+			JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+
+			String status = jsonObject.has("status") && !jsonObject.get("status").isJsonNull()
+					? jsonObject.get("status").getAsString()
+					: "unknown";
+
+			String longStatus = jsonObject.has("long_status") && !jsonObject.get("long_status").isJsonNull()
+					? jsonObject.get("long_status").getAsString()
+					: "unknown";
+
+			// You might also want to store or propagate these values somewhere
+			AstraSubLink link = subLinksMap.get(deviceName);
+			if (link != null) {
+				link.setDetailedStatus(longStatus);
+				link.setStatus(status);
+			}
+
+		} catch (Exception e) {
+			eventProducer.sendWarning("Error parsing metadata JSON for " + deviceName + ": " + e.getMessage());
+		}
+
 	}
 
 	private void handleTelemetry(String deviceName, MqttMessage message) {

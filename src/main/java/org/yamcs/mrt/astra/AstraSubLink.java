@@ -1,21 +1,31 @@
 package org.yamcs.mrt.astra;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.yamcs.ConfigurationException;
 import org.yamcs.YConfiguration;
 import org.yamcs.tctm.AbstractTcTmParamLink;
-import org.yamcs.tctm.Link;
 
-public abstract class AstraSubLink extends AbstractTcTmParamLink implements Link {
+public abstract class AstraSubLink extends AbstractTcTmParamLink {
 	private Status status = Status.UNAVAIL;
 	private String detailedStatus = "";
 
-	public void init(String instance, String name, YConfiguration config, Status status, String detailedStatus)
-			throws ConfigurationException {
+	@Override
+	public void init(String yamcsInstance, String linkName, YConfiguration config) throws ConfigurationException {
+		Map<String, Object> cfgMap = config.getRoot();
+		Map<String, Object> args = new HashMap<>();
 
-		this.detailedStatus = detailedStatus;
-		this.status = status;
-		super.init(instance, name, config);
+		args.put("timestampOffset", -1);
+		args.put("seqCountOffset", 0);
+
+		cfgMap.put("packetPreprocessorClassName", "org.yamcs.tctm.GenericPacketPreprocessor");
+		cfgMap.put("packetPreprocessorArgs", args);
+
+		YConfiguration cfg = YConfiguration.wrap(cfgMap);
+
+		super.init(yamcsInstance, linkName, cfg);
 	}
 
 	@Override
@@ -25,6 +35,18 @@ public abstract class AstraSubLink extends AbstractTcTmParamLink implements Link
 
 	public void setDetailedStatus(String detailedStatus) {
 		this.detailedStatus = detailedStatus;
+	}
+
+	public void setStatus(String statusString) {
+		Status status = switch (statusString) {
+			case "OK" -> Status.OK;
+			case "UNAVAIL" -> Status.UNAVAIL;
+			case "FAILED" -> Status.FAILED;
+			case "DISABLED" -> Status.DISABLED;
+			default -> throw new IllegalArgumentException("Unknown status type: " + statusString);
+		};
+
+		this.status = status;
 	}
 
 	public abstract void handleMqttMessage(MqttMessage message);;
