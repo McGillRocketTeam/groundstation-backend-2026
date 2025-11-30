@@ -26,7 +26,8 @@ dataLinks:
     class: org.yamcs.mrt.AstraAggregateDataLink
     autoReconnect: true
     brokers:
-       - tcp://mrt.leomindlin.com:1883 
+       - tcp://localhost:1883 
+       # - tcp://mrt.leomindlin.com:1883 
     # packetPreprocessorClassName: org.yamcs.tctm.GenericPacketPreprocessor
     # packetPreprocessorArgs:
     #    timestampOffset: -1 #no timestmap in the packet
