@@ -4,6 +4,8 @@ services:
     image: eclipse-mosquitto:latest
     ports:
       - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
     restart: always
   mbtileserver:
     image: ghcr.io/consbio/mbtileserver:latest
@@ -21,12 +23,12 @@ services:
       - mqtt_broker
       - mbtileserver
     restart: always
-  # frontend:
-  #   image: groundstation-frontend:vite
-  #   ports:
-  #     - "5173:5173"
-  #   depends_on:
-  #     - backend
-  #     - mqtt_broker
-  #     - mbtileserver
-  #   restart: always
+  frontend:
+    image: ghcr.io/mcgillrocketteam/groundstation-frontend-2026:main
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+      - mqtt_broker
+      - mbtileserver
+    restart: always
