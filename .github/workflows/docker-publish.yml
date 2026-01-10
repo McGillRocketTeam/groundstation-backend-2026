@@ -4,14 +4,12 @@ on:
   push:
     branches:
       - main
-      - add-docker
     # Optional: publish semver tags too (still restricted by "push" event)
     tags:
       - "v*.*.*"
   pull_request:
     branches:
       - main
-      - add-docker
 
 env:
   REGISTRY: ghcr.io
