@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  mqtt_broker:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+    restart: always
+  mbtileserver:
+    image: ghcr.io/consbio/mbtileserver:latest
+    ports:
+      - "3001:8000"
+    volumes:
+      - ./assets/maps:/data
+    restart: always
+  backend:
+    image: groundstation-backend:v1
+    ports:
+      - "8090:8090"
+      - "10015/udp"
+    depends_on:
+      - mqtt_broker
+      - mbtileserver
+    restart: always
+  frontend:
+    image: groundstation-frontend:vite
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+      - mqtt_broker
+      - mbtileserver
+    restart: always
