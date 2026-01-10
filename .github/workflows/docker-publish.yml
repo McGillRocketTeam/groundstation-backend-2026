@@ -4,16 +4,16 @@ on:
   push:
     branches:
       - main
-    # Optional: publish semver tags too (still restricted by "push" event)
+      - add-docker
     tags:
       - "v*.*.*"
   pull_request:
     branches:
       - main
+      - add-docker
 
 env:
   REGISTRY: ghcr.io
-  # Publishes as ghcr.io/<owner>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -29,7 +29,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Only needed when we actually publish/sign (not on PRs)
+      # Needed for multi-arch builds (arm64) on amd64 runners
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
       - name: Install cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3
@@ -52,10 +57,6 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          # Produces sensible tags across repos:
-          # - branch tags (e.g., main, add-docker)
-          # - PR tags (won't be pushed because push=false on PRs)
-          # - semver tags when pushing tags like v1.2.3
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -68,8 +69,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          # Uses ./Dockerfile by default; set `file:` if yours differs
           push: ${{ github.event_name != 'pull_request' }}
+          platforms: linux/amd64,linux/arm64/v8
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
