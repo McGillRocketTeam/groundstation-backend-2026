@@ -99,11 +99,13 @@ def extract_number(s: str) -> int | None:
     match = re.search(r"\d+", s)
     return int(match.group()) if match else None
 
+
 def set_param_calibrator(row):
     cal = row["Calibration Function f(x)"]
     if cal:
         return Y.calibrators.MathOperation(expression=cal)
     return None
+
 
 def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
     gui_type = str(row["GUI Type"])
@@ -166,7 +168,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                     short_description=ui_name,
                     long_description=description,
                     units=units,
-                    encoding=Y.FloatEncoding(bits=size),
+                    encoding=Y.FloatEncoding(bits=size, little_endian=True),
                     calibrator=calibrator,
                 )
                 return param

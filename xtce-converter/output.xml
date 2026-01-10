@@ -277,9 +277,9 @@ See https://github.com/yamcs/pymdb
           </DefaultCalibrator>
         </IntegerDataEncoding>
       </IntegerParameterType>
-      <IntegerParameterType name="vertical_speed" signed="true" sizeInBits="32">
-        <IntegerDataEncoding sizeInBits="32" encoding="twosComplement" byteOrder="mostSignificantByteFirst"/>
-      </IntegerParameterType>
+      <FloatParameterType name="vertical_speed" sizeInBits="32">
+        <FloatDataEncoding sizeInBits="32" encoding="IEEE754_1985" byteOrder="mostSignificantByteFirst"/>
+      </FloatParameterType>
     </ParameterTypeSet>
     <ParameterSet>
       <Parameter name="acceleration_x" parameterTypeRef="acceleration_x" shortDescription="Acceleration x">
