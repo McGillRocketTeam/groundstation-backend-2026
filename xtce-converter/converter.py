@@ -178,7 +178,7 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                     if "u" in encoded_type
                     else Y.IntegerEncodingScheme.TWOS_COMPLEMENT
                 )
-                param = Y.IntegerParameter(
+                param = Y.FloatParameter(
                     system=system,
                     name=variable_name,
                     short_description=ui_name,
@@ -209,7 +209,9 @@ def make_param(system: Y.System, row: dict[str, Any]) -> Y.Parameter:
                 short_description=ui_name,
                 long_description=description,
                 units=units,
-                encoding=Y.IntegerEncoding(bits=size, scheme=scheme),
+                encoding=Y.IntegerEncoding(
+                    bits=size, scheme=scheme, little_endian=True
+                ),
                 calibrator=calibrator,
             )
             return param
