@@ -22,6 +22,11 @@ services:
   - class: org.yamcs.timeline.TimelineService
 
 dataLinks:
+  - name: simulator
+    class: org.yamcs.tctm.UdpParameterDataLink
+    stream: pp_realtime
+    port: 11016
+    json: true
   - name: tctm
     class: org.yamcs.mqtt.MqttPacketLink
     tmStream: tm_realtime
