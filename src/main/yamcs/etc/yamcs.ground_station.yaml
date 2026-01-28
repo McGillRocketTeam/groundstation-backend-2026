@@ -22,37 +22,36 @@ services:
   - class: org.yamcs.timeline.TimelineService
 
 dataLinks:
-  - name: gs-radio-pad
-    class: org.yamcs.mqtt.MqttPacketLink
+  - name: ASTRA
+    class: org.yamcs.mrt.AstraAggregateDataLink
+    autoReconnect: true
+    brokers:
+       - tcp://localhost:1883 
+       # - tcp://mrt.leomindlin.com:1883 
+    # packetPreprocessorClassName: org.yamcs.tctm.GenericPacketPreprocessor
+    # packetPreprocessorArgs:
+    #    timestampOffset: -1 #no timestmap in the packet
+    #    seqCountOffset: 0
     tmStream: tm_realtime
-    # the packets sent by the simulator are coming from the quickstart, they are CCSDS without a secondary header (and without a timestamp)
+    tcStream: tc_realtime
+
+  - name: LabJack
+    class: org.yamcs.labjack.LabJackDataLink
     packetPreprocessorClassName: org.yamcs.tctm.GenericPacketPreprocessor
     packetPreprocessorArgs:
        timestampOffset: -1 #no timestmap in the packet
        seqCountOffset: 0
-    tmStream: tm_realtime
-    tcStream: tc_realtime
-    commandPostprocessorClassName: org.yamcs.tctm.GenericCommandPostprocessor
-    # MQTT connection parameters
-    brokers:
-       - tcp://mrt.leomindlin.com:1883 
-    tmTopic: yamcs-tm-packets
-    tcTopic: yamcs-tc-packets
-    # autoRecoonect: true
-    # connectionTimeoutSecs: 5
-    # keepAliveSecs: 60
-    #username: 
-    #password:
 
 mdb:
   - type: xtce
     args:
-      file: mdb/FlightComputer.xml
+      file: mdb/rocket.xml
 
 # Configuration for streams created at server startup
 streamConfig:
   tm:
     - name: "tm_realtime"
+      rootContainer: "/FlightComputer/FCFrame"
     - name: "tm_dump"
   cmdHist: ["cmdhist_realtime", "cmdhist_dump"]
   event: ["events_realtime", "events_dump"]
@@ -61,3 +60,4 @@ streamConfig:
   tc:
     - name: "tc_realtime"
       processor: "realtime"
+
